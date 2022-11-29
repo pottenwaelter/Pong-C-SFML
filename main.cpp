@@ -16,7 +16,20 @@ int main()
     ball.setRadius(10);
     ball.setOrigin(10, 10);
     ball.setPosition(512, 384);
+
+    //Préparation affichage du score
+    if (!generalFont.loadFromFile("resources/verdana.ttf"))
+    {
+        cout << "Erreur chargement police" << endl;
+    }
+    score.setFont(generalFont);
+    score.setFillColor(Color(175, 175, 175));
+    score.setCharacterSize(30);
+    score.setOrigin(textRectangle.getLocalBounds().left + textRectangle.getLocalBounds().width / 2,
+                    textRectangle.getLocalBounds().top + textRectangle.getLocalBounds().height / 2);
+    score.setPosition(Vector2f(WIN_WIDTH / 2, 10));
     
+
 
     while (window.isOpen())
     {
@@ -30,6 +43,8 @@ int main()
             
             input.inputHandler(event, window);
         }
+        scoreStr = to_string(playerScore) + " - " + to_string(cpuScore);
+        score.setString(scoreStr);
 
         checkKey();
         cpuMovement();
@@ -39,6 +54,7 @@ int main()
         window.draw(player1);
         window.draw(cpu);
         window.draw(ball);
+        window.draw(score);
         window.display();
 
     }
@@ -51,7 +67,7 @@ void checkKey()
 {
     if (input.getKey().up == true)
     {
-        if (player1.getPlayerPositionY() > 50) // si on est tout en haut (position y 0 + 50 -> la moitié de la hauteur de la raquette), on peut pas aller plus en haut
+        if (player1.getPlayerPositionY() > (player1.getPlayerHeight() / 2)) // si on est tout en haut (position y 0 + 50 -> la moitié de la hauteur de la raquette), on peut pas aller plus en haut
         {
             player1.movePlayerUp(PLAYER_SPEED);
         }
@@ -59,7 +75,7 @@ void checkKey()
 
     if (input.getKey().down == true)
     {
-        if (player1.getPlayerPositionY() < (WIN_HEIGHT - 50))
+        if (player1.getPlayerPositionY() < (WIN_HEIGHT - (player1.getPlayerHeight() / 2)))
         {
             player1.movePlayerDown(PLAYER_SPEED);
 
@@ -76,7 +92,7 @@ void checkKey()
 void cpuMovement()
 {
     cpu.movePlayerUp(aiSpeed);
-    if (cpu.getPlayerPositionY() <= 50 || cpu.getPlayerPositionY() >= (WIN_HEIGHT - 50))
+    if (cpu.getPlayerPositionY() <= (cpu.getPlayerHeight() / 2) || cpu.getPlayerPositionY() >= (WIN_HEIGHT - (cpu.getPlayerHeight() / 2)))
     {
         aiSpeed *= -1;
     }
@@ -85,21 +101,49 @@ void cpuMovement()
 //Gestion du mouvement de la balle
 void ballMovement()
 {
-    ballHitbox = ball.getGlobalBounds();
-    cout << ballHitbox.left << endl;
-    ball.move(-xBallSpeed, yBallSpeed);
-    if (ball.getPosition().x <= 0 || ball.getPosition().x >= 1024)
+    if (!hasScored)
     {
-        xBallSpeed *= -1;
+        ballHitbox = ball.getGlobalBounds();
+        ball.move(-xBallSpeed, yBallSpeed);
+        if (ball.getPosition().x <= 0 || ball.getPosition().x >= WIN_WIDTH)
+        {
+            if (ball.getPosition().x <= 0)
+            {
+                cpuScore++;
+            }
+            if (ball.getPosition().x >= WIN_WIDTH)
+            {
+                playerScore++;
+            }
+            ball.setPosition(WIN_WIDTH / 2, WIN_HEIGHT / 2);
+            xBallSpeed *= -1;
+            hasScored = true;
+            scoreClock.restart();
+        }
+
+        if (ball.getPosition().y <= 0 || ball.getPosition().y >= WIN_HEIGHT)
+        {
+            yBallSpeed *= -1;
+        }
+        if (!hasCollided)
+        {
+            if (ballHitbox.intersects(player1.getHitbox()) || ballHitbox.intersects(cpu.getHitbox()))
+            {
+                cout << "Collision" << endl;
+                hasCollided = true;
+                collisionClock.restart();
+                xBallSpeed *= -1;
+            }
+        }
+
+        if (collisionClock.getElapsedTime().asSeconds() > 1 && hasCollided == true)
+        {
+            hasCollided = false;
+        }
     }
 
-    if (ball.getPosition().y <= 0 || ball.getPosition().y >= 768)
+    if (scoreClock.getElapsedTime().asSeconds() > 2)
     {
-        yBallSpeed *= -1;
-    }
-
-    if (ballHitbox.intersects(player1.getHitbox()))
-    {
-        cout << "Collision" << endl;
+        hasScored = false;
     }
 }

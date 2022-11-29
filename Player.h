@@ -11,13 +11,15 @@ class Player : public Drawable
 {
 public:
 	Player();
-	Player(float xPos);
-	void setPlayer();
+	Player(float width, float height);
+	Player(float xPos, float width, float height);
+	void setPlayer(float width, float height);
 	void setHitbox();
 	FloatRect getHitbox();
 	void movePlayerUp(float moveSpeed);
 	void movePlayerDown(float moveSpeed);
 	float getPlayerPositionY();
+	float getPlayerHeight();
 private:
 	virtual void draw(RenderTarget& target, RenderStates states) const
 	{
