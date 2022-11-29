@@ -129,7 +129,6 @@ void ballMovement()
         {
             if (ballHitbox.intersects(player1.getHitbox()) || ballHitbox.intersects(cpu.getHitbox()))
             {
-                cout << "Collision" << endl;
                 hasCollided = true;
                 collisionClock.restart();
                 xBallSpeed *= -1;
