@@ -20,16 +20,21 @@ int main()
     //Préparation affichage du score
     if (!generalFont.loadFromFile("resources/verdana.ttf"))
     {
-        cout << "Erreur chargement police" << endl;
+        err() << "Impossible de charger la police" << endl;
+        return -1;
     }
     score.setFont(generalFont);
     score.setFillColor(Color(175, 175, 175));
     score.setCharacterSize(30);
-    score.setOrigin(textRectangle.getLocalBounds().left + textRectangle.getLocalBounds().width / 2,
-                    textRectangle.getLocalBounds().top + textRectangle.getLocalBounds().height / 2);
-    score.setPosition(Vector2f(WIN_WIDTH / 2, 10));
-    
+    score.setPosition(WIN_WIDTH / 2, 20);
 
+    
+    //Préparation affichage menu pause
+    gamePause.setFont(generalFont);
+    gamePause.setFillColor(Color::White);
+    gamePause.setString("PAUSE");
+    gamePause.setCharacterSize(30);
+    gamePause.setPosition(WIN_WIDTH / 2, WIN_HEIGHT / 2);
 
     while (window.isOpen())
     {
@@ -45,16 +50,25 @@ int main()
         }
         scoreStr = to_string(playerScore) + " - " + to_string(cpuScore);
         score.setString(scoreStr);
+        score.setOrigin(round(score.getLocalBounds().left + score.getLocalBounds().width / 2), round(score.getLocalBounds().top + score.getLocalBounds().height / 2));
+        gamePause.setOrigin(round(gamePause.getLocalBounds().left + gamePause.getLocalBounds().width / 2), round(gamePause.getLocalBounds().top + gamePause.getLocalBounds().height / 2));
 
         checkKey();
-        cpuMovement();
-        ballMovement();
+        if (!isGamePaused)
+        {
+            cpuMovement();
+            ballMovement();
+        }
 
         window.clear();
         window.draw(player1);
         window.draw(cpu);
         window.draw(ball);
         window.draw(score);
+        if (isGamePaused)
+        {
+            window.draw(gamePause);
+        }
         window.display();
 
     }
@@ -65,20 +79,31 @@ int main()
 //Fonction de gestion des inputs clavier
 void checkKey()
 {
-    if (input.getKey().up == true)
+    if (!isGamePaused)
     {
-        if (player1.getPlayerPositionY() > (player1.getPlayerHeight() / 2)) // si on est tout en haut (position y 0 + 50 -> la moitié de la hauteur de la raquette), on peut pas aller plus en haut
+        if (input.getKey().up == true)
         {
-            player1.movePlayerUp(PLAYER_SPEED);
+            if (player1.getPlayerPositionY() > (player1.getPlayerHeight() / 2)) // si on est tout en haut (position y 0 + 50 -> la moitié de la hauteur de la raquette), on peut pas aller plus en haut
+            {
+                player1.movePlayerUp(PLAYER_SPEED);
+            }
+        }
+
+        if (input.getKey().down == true)
+        {
+            if (player1.getPlayerPositionY() < (WIN_HEIGHT - (player1.getPlayerHeight() / 2)))
+            {
+                player1.movePlayerDown(PLAYER_SPEED);
+
+            }
         }
     }
 
-    if (input.getKey().down == true)
+    if (pauseClock.getElapsedTime().asSeconds() > 1.5)
     {
-        if (player1.getPlayerPositionY() < (WIN_HEIGHT - (player1.getPlayerHeight() / 2)))
+        if (input.getKey().start == true)
         {
-            player1.movePlayerDown(PLAYER_SPEED);
-
+            pauseMenu();
         }
     }
 
@@ -144,5 +169,19 @@ void ballMovement()
     if (scoreClock.getElapsedTime().asSeconds() > 2)
     {
         hasScored = false;
+    }
+}
+
+void pauseMenu()
+{
+    if (!isGamePaused)
+    {
+        isGamePaused = true;
+        pauseClock.restart();
+    }
+    else
+    {
+        isGamePaused = false;
+        pauseClock.restart();
     }
 }

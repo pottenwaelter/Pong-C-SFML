@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Player.h"
 #include <string>
+#include <cmath>
 
 //Variables globales
 //Fenetre
@@ -27,7 +28,6 @@ Clock collisionClock;
 //Texte
 Font generalFont;
 Text score;
-RectangleShape textRectangle;
 string scoreStr;
 //Scores
 int playerScore = 0;
@@ -35,6 +35,11 @@ int cpuScore = 0;
 //Bool pour bloquer la balle un petit moment après un but
 bool hasScored = false;
 Clock scoreClock;
+
+//Menu pause
+bool isGamePaused = false;
+Text gamePause;
+Clock pauseClock;
 
 
 //Constantes
@@ -47,6 +52,7 @@ const float PLAYER_SPEED = 4;
 void checkKey();
 void cpuMovement();
 void ballMovement();
+void pauseMenu();
 
 
 #endif // !MAIN_H
