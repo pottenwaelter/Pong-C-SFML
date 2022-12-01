@@ -1,3 +1,3 @@
 # Pong-Cpp-SFML
 
-Just a simple Pong game to get used to the C++ SFML library
+A simple Pong made with the C++ SFML library
