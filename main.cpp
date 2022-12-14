@@ -35,6 +35,11 @@ int main()
     gamePause.setString("PAUSE");
     gamePause.setCharacterSize(30);
     gamePause.setPosition(WIN_WIDTH / 2, WIN_HEIGHT / 2);
+    //Affichage texte avant la partie
+    gameStart.setFont(generalFont);
+    gameStart.setFillColor(Color::White);
+    gameStart.setCharacterSize(30);
+    gameStart.setPosition(WIN_WIDTH / 2, WIN_HEIGHT / 2);
 
     while (window.isOpen())
     {
@@ -52,9 +57,12 @@ int main()
         score.setString(scoreStr);
         score.setOrigin(round(score.getLocalBounds().left + score.getLocalBounds().width / 2), round(score.getLocalBounds().top + score.getLocalBounds().height / 2));
         gamePause.setOrigin(round(gamePause.getLocalBounds().left + gamePause.getLocalBounds().width / 2), round(gamePause.getLocalBounds().top + gamePause.getLocalBounds().height / 2));
+        startString = "PRESS SPACE TO START THE GAME";
+        gameStart.setString(startString);
+        gameStart.setOrigin(round(gameStart.getLocalBounds().left + gameStart.getLocalBounds().width / 2), round(gameStart.getLocalBounds().top + gameStart.getLocalBounds().height / 2));
 
         checkKey();
-        if (!isGamePaused)
+        if (!isGamePaused && hasGameStarted)
         {
             cpuMovement();
             ballMovement();
@@ -63,7 +71,14 @@ int main()
         window.clear();
         window.draw(player1);
         window.draw(cpu);
-        window.draw(ball);
+        if (!hasGameStarted)
+        {
+            window.draw(gameStart);
+        }
+        if (hasGameStarted)
+        {
+            window.draw(ball);
+        }
         window.draw(score);
         if (isGamePaused)
         {
@@ -79,7 +94,7 @@ int main()
 //Fonction de gestion des inputs clavier
 void checkKey()
 {
-    if (!isGamePaused)
+    if (!isGamePaused && hasGameStarted)
     {
         if (input.getKey().up == true)
         {
@@ -99,11 +114,19 @@ void checkKey()
         }
     }
 
-    if (pauseClock.getElapsedTime().asSeconds() > 1.5)
+    if (input.getKey().space == true)
     {
-        if (input.getKey().start == true)
+        hasGameStarted = true;
+    }
+
+    if (pauseClock.getElapsedTime().asSeconds() > 1.f)
+    {
+        if (hasGameStarted)
         {
-            pauseMenu();
+            if (input.getKey().start == true)
+            {
+                pauseMenu();
+            }
         }
     }
 

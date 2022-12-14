@@ -7,7 +7,7 @@ using namespace sf;
 
 class Input
 {
-	struct KeyboardKey { bool up, down, start, escape; };
+	struct KeyboardKey { bool up, down, start, escape, space; };
 public:
 	Input();
 	void inputHandler(Event event, RenderWindow& window);

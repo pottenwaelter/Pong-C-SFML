@@ -41,6 +41,12 @@ bool isGamePaused = false;
 Text gamePause;
 Clock pauseClock;
 
+//Début du jeu
+bool hasGameStarted = false;
+Text gameStart;
+string startString;
+
+
 
 //Constantes
 const int WIN_HEIGHT = 768;
