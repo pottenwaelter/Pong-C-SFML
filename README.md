@@ -15,7 +15,12 @@ Once inside the folder, launch Pong.exe.
 ## Controls
 
 **Spacebar**: start game
+
 **Z**: move up
+
 **S**: move down
+
 **Enter**: pause game
+
 **Esc**: exit game
+
